@@ -3,6 +3,7 @@ using Android.Widget;
 using Android.OS;
 using System;
 using ArticleReader.TextToSpeech;
+using System.Threading.Tasks;
 
 namespace ArticleReader
 {
@@ -36,22 +37,30 @@ namespace ArticleReader
 
         }
 
-        private void LoadUrlClick(object sender, EventArgs e)
+        private async void LoadUrlClick(object sender, EventArgs e)
         {
+            LoadUrlButton.Enabled = false;
+
             var text = UrlBox.Text;
             var url = new Uri(text);
 
             if (!url.IsWellFormedOriginalString())
             {
                 TextView.Text = "Invalid url";
+                LoadUrlButton.Enabled = false;
                 return;
             }
 
             ClearText();
 
-            var webPage = new WebArticleParser.WebPageText(url.AbsoluteUri);
+            await Task.Run(() =>
+            {
+                var webPage = new WebArticleParser.WebPageText(url.AbsoluteUri);
 
-            TextView.Text = webPage.Text;
+                TextView.Text = webPage.Text;
+            });
+
+            LoadUrlButton.Enabled = false;
         }
 
         private void SpeakText (object sender, EventArgs e)
